@@ -16,20 +16,20 @@ namespace persiafighter.Plugins.Jobs
     {
         public JobManager JobManager { get; private set; }
         private readonly IPermissionProvider _permissionProvider;
-        private readonly IPlayerManager _userManager;
+        private readonly IPlayerManager _playerManager;
         private readonly IEventBus _eventBus;
 
-        public RocketJobsPlugin(IDependencyContainer container, IPermissionProvider permissionProvider, IPlayerManager userManager, IEventBus eventBus) : base("Jobs", container)
+        public RocketJobsPlugin(IDependencyContainer container, IPermissionProvider permissionProvider, IPlayerManager playerManager, IEventBus eventBus) : base("Jobs", container)
         {
             _permissionProvider = permissionProvider;
-            _userManager = userManager;
+            _playerManager = playerManager;
             _eventBus = eventBus;
         }
 
         protected override async Task OnActivate(bool isFromReload)
         {
             if (JobManager == null)
-                JobManager = new JobManager(ConfigurationInstance, Translations, _permissionProvider, _userManager);
+                JobManager = new JobManager(ConfigurationInstance, Translations, _permissionProvider, _playerManager);
             else
                 JobManager.Reload(ConfigurationInstance);
 
