@@ -1,6 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net35;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>RocketJobs</AssemblyName>
     <RootNamespace>persiafighter.Plugins.Jobs</RootNamespace>
     <OutputType>Library</OutputType>
@@ -23,6 +23,6 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup> 
   <ItemGroup>
-    <PackageReference Include="Rocket.Core" Version="5.0.0.566" />
+    <PackageReference Include="Rocket.Core" Version="5.0.0.669" />
   </ItemGroup>
 </Project>

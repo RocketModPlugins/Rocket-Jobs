@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Rocket.API.Commands;
+using Rocket.API.Player;
 using Rocket.API.Plugins;
+using Rocket.API.User;
 using Rocket.Core.Commands;
 
 namespace persiafighter.Plugins.Jobs.Commands
@@ -14,7 +17,7 @@ namespace persiafighter.Plugins.Jobs.Commands
             _rocketJobsPlugin = (RocketJobsPlugin)plugin;
         }
 
-        public bool SupportsUser(Type user) => true;
+        public bool SupportsUser(IUser user) => true;
         public string Name => "JoinJob";
         public string Summary => "Joins a public job or applies to a private job.";
         public string Description => "Joins a public job or applies to a private job.";
@@ -24,14 +27,14 @@ namespace persiafighter.Plugins.Jobs.Commands
 
         public IChildCommand[] ChildCommands => null;
 
-        public void Execute(ICommandContext context)
+        public async Task ExecuteAsync(ICommandContext context)
         {
             if (context.Parameters.Length != 1)
                 throw new CommandWrongUsageException();
 
-            string job = context.Parameters.Get<string>(0);
+            string job = await context.Parameters.GetAsync<string>(0);
 
-            _rocketJobsPlugin.JobManager.AddPlayerToJob(context.User, job, context.User);
+            await _rocketJobsPlugin.JobManager.AddPlayerToJob((IPlayer)context.User, job, context.User);
         }
     }
 }

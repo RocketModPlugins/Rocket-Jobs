@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Rocket.API.Commands;
 using Rocket.API.Plugins;
+using Rocket.API.User;
 
 namespace persiafighter.Plugins.Jobs.Commands
 {
@@ -13,7 +15,7 @@ namespace persiafighter.Plugins.Jobs.Commands
             _rocketJobsPlugin = (RocketJobsPlugin)plugin;
         }
 
-        public bool SupportsUser(Type user) => true;
+        public bool SupportsUser(IUser user) => true;
         public string Name => "Jobs";
         public string Summary => "Lists the available jobs.";
         public string Description => "Lists the available jobs.";
@@ -23,9 +25,9 @@ namespace persiafighter.Plugins.Jobs.Commands
 
         public IChildCommand[] ChildCommands => null;
 
-        public void Execute(ICommandContext context)
+        public async Task ExecuteAsync(ICommandContext context)
         {
-            _rocketJobsPlugin.JobManager.ListJobs(context.User);
+            await _rocketJobsPlugin.JobManager.ListJobs(context.User);
         }
     }
 }

@@ -4,6 +4,8 @@ using Rocket.API.User;
 using Rocket.Core.Commands;
 using Rocket.Core.I18N;
 using System;
+using System.Threading.Tasks;
+using Rocket.API.Player;
 
 namespace persiafighter.Plugins.Jobs.Commands
 {
@@ -16,7 +18,7 @@ namespace persiafighter.Plugins.Jobs.Commands
             _rocketJobsPlugin = (RocketJobsPlugin)plugin;
         }
 
-        public bool SupportsUser(Type user) => true;
+        public bool SupportsUser(IUser user) => true;
         public string Name => "JobAdmin";
         public string Summary => "Administrative command for jobs.";
         public string Description => "Controls jobs people are on, applications, jobs that exist, etc.";
@@ -26,15 +28,15 @@ namespace persiafighter.Plugins.Jobs.Commands
 
         public IChildCommand[] ChildCommands => null;
 
-        public void Execute(ICommandContext context)
+        public async Task ExecuteAsync(ICommandContext context)
         {
             if (context.Parameters.Length != 2)
                 throw new CommandWrongUsageException();
 
             IUserManager globalUserManager = context.Container.Resolve<IUserManager>();
 
-            string arg1 = context.Parameters.Get<string>(0);
-            string arg2 = context.Parameters.Get<string>(1);
+            string arg1 = await context.Parameters.GetAsync<string>(0);
+            string arg2 = await context.Parameters.GetAsync<string>(1);
 
             //todo: should be converted to sub commands
 
@@ -44,26 +46,25 @@ namespace persiafighter.Plugins.Jobs.Commands
             {
                 if (context.Parameters.Length == 3)
                 {
-                    IUserInfo target = context.Parameters.Get<IUserInfo>(2);
+                    IPlayer target = await context.Parameters.GetAsync<IPlayer>(2);
 
-                    _rocketJobsPlugin.JobManager.AddPlayerToJob(target, arg2, context.User);
+                    await _rocketJobsPlugin.JobManager.AddPlayerToJob(target, arg2, context.User);
                 }
                 else
-                    globalUserManager.SendLocalizedMessage(_rocketJobsPlugin.Translations, context.User, "jobadmin_usage_add");
+                    await globalUserManager.SendLocalizedMessageAsync(_rocketJobsPlugin.Translations, context.User, "jobadmin_usage_add");
             }
             else if (arg1.Equals("remove", StringComparison.OrdinalIgnoreCase))
             {
                 if (context.Parameters.Length == 3)
                 {
-                    IUserInfo target = context.Parameters.Get<IUserInfo>(2);
-
-                    _rocketJobsPlugin.JobManager.RemovePlayerFromJob(target, arg2, context.User);
+                    IPlayer target = await context.Parameters.GetAsync<IPlayer>(2);
+                    await _rocketJobsPlugin.JobManager.RemovePlayerFromJob(target, arg2, context.User);
                 }
                 else
-                    globalUserManager.SendLocalizedMessage(_rocketJobsPlugin.Translations, context.User, "jobadmin_usage_remove");
+                    await globalUserManager.SendLocalizedMessageAsync(_rocketJobsPlugin.Translations, context.User, "jobadmin_usage_remove");
             }
             else
-                globalUserManager.SendLocalizedMessage(_rocketJobsPlugin.Translations, context.User, "jobadmin_usage");
+                await globalUserManager.SendLocalizedMessageAsync(_rocketJobsPlugin.Translations, context.User, "jobadmin_usage");
         }
     }
 }

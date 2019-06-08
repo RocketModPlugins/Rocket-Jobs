@@ -4,7 +4,10 @@ using Rocket.API.Permissions;
 using Rocket.API.User;
 using Rocket.Core.Plugins;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using persiafighter.Plugins.Jobs.EventListeners;
+using Rocket.API.Eventing;
+using Rocket.API.Player;
 using Rocket.Core.Logging;
 
 namespace persiafighter.Plugins.Jobs
@@ -13,15 +16,17 @@ namespace persiafighter.Plugins.Jobs
     {
         public JobManager JobManager { get; private set; }
         private readonly IPermissionProvider _permissionProvider;
-        private readonly IUserManager _userManager;
+        private readonly IPlayerManager _userManager;
+        private readonly IEventBus _eventBus;
 
-        public RocketJobsPlugin(IDependencyContainer container, IPermissionProvider permissionProvider, IUserManager userManager) : base("Jobs", container)
+        public RocketJobsPlugin(IDependencyContainer container, IPermissionProvider permissionProvider, IPlayerManager userManager, IEventBus eventBus) : base("Jobs", container)
         {
             _permissionProvider = permissionProvider;
             _userManager = userManager;
+            _eventBus = eventBus;
         }
 
-        protected override void OnLoad(bool isFromReload)
+        protected override async Task OnActivate(bool isFromReload)
         {
             if (JobManager == null)
                 JobManager = new JobManager(ConfigurationInstance, Translations, _permissionProvider, _userManager);
@@ -29,11 +34,12 @@ namespace persiafighter.Plugins.Jobs
                 JobManager.Reload(ConfigurationInstance);
 
             Logger.LogInformation("RocketJobs, by persiafigther, has been sucessfully loaded!");
+            Logger.LogInformation("RocketJobs is maintained by the Rocket Community Plugins Team, please consider helping us out");
 
-            EventManager.AddEventListener(this, new PlayerListener(this));
+            _eventBus.AddEventListener(this, new PlayerListener(this));
         }
 
-        protected override void OnUnload()
+        protected override async Task OnDeactivate()
         {
             JobManager.ClearAll();
             Logger.LogInformation("RocketJobs, by persiafighter, has been successfully unloaded!");
